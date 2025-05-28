@@ -1,0 +1,138 @@
+/* Cart Page Styles */
+.cart-page {
+    min-height: 80vh;
+}
+
+.page-title {
+    color: #2874f0;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-cart {
+    padding: 3rem 0;
+}
+
+.cart-items-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item {
+    transition: background-color 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: #f8f9fa;
+}
+
+.cart-item-image {
+    border: 1px solid #e0e0e0;
+}
+
+.item-name {
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.current-price {
+    color: #2874f0;
+    font-size: 1.1rem;
+}
+
+.original-price {
+    font-size: 0.9rem;
+}
+
+.quantity-controls {
+    gap: 0.5rem;
+}
+
+.quantity-display {
+    min-width: 2rem;
+    text-align: center;
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.cart-summary-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 2rem;
+}
+
+.summary-row {
+    padding: 0.25rem 0;
+}
+
+.summary-total {
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+}
+
+.payment-options {
+    margin-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cart-item {
+        padding: 1rem !important;
+    }
+    
+    .quantity-controls {
+        justify-content: center;
+        margin: 1rem 0;
+    }
+    
+    .item-total {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .cart-summary-card {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+/* Animation for cart updates */
+.cart-item {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.tick-animation {
+  animation: pop 0.5s ease-in-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
