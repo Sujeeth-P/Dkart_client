@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
   function handleSubmit() {
-    axios.post("http://localhost:5000/ecommerce/login", { email, password })
+    axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/login", { email, password })
       .then(() => {
         alert("Data posted successfully")
         setEmail('')
