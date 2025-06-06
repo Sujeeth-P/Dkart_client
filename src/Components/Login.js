@@ -1,49 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'
-import { useState } from 'react';
+import axios from 'axios';
+import { Col } from 'react-bootstrap'; // Import Col
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
-  function handleSubmit() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  function handleSubmit(e) { // Added 'e' parameter
+    e.preventDefault(); // Prevent default anchor tag behavior if button is inside <a>
     axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/login", { email, password })
       .then(() => {
-        alert("Data posted successfully")
-        setEmail('')
-        setPassword('')
-        navigate('/home')
+        alert("Login successful!"); // More user-friendly message
+        setEmail('');
+        setPassword('');
+        navigate('/home');
       })
       .catch((err) => {
-        alert(err)
-      })
+        // Provide more specific error feedback
+        if (err.response && err.response.data && err.response.data.message) {
+          alert(`Login failed: ${err.response.data.message}`);
+        } else if (err.message) {
+          alert(`Login failed: ${err.message}`);
+        } else {
+          alert("Login failed. Please try again.");
+        }
+        console.error("Login error:", err); // Log error for debugging
+      });
   }
+
   return (
     <StyledWrapper>
-      <div className="login-main">
-        <div className="login-box">
-          <p>Login</p>
-          <form>
-            <div className="user-box">
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <label>Email</label>
-            </div>
-            <div className="user-box">
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <label>Password</label>
-            </div>
-          </form>
-          <a href="#">
-            <span />
-            <span />
-            <span />
-            <span />
-            <button onClick={handleSubmit}>Login</button>
-          </a>
-          <p>Don't have an account? <Link as={Link} to="/signup" className="a2">Sigup</Link></p>
-        </div>
+      <div className="login-main"> {/* This div already centers its content */}
+        <Col xs={11} sm={10} md={8} lg={6} xl={5} xxl={4}> {/* Bootstrap Col for responsive width */}
+          <div className="login-box"> {/* Styles from StyledWrapper, but width/positioning adjusted */}
+            <p>Login</p>
+            <form onSubmit={handleSubmit}> {/* Added onSubmit to form for better practice */}
+              <div className="user-box">
+                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <label>Email</label>
+              </div>
+              <div className="user-box">
+                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <label>Password</label>
+              </div>
+              <button type="submit" className="login-button-styled">
+                {/* Spans for animation */}
+                <span className="animation-span"></span>
+                <span className="animation-span"></span>
+                <span className="animation-span"></span>
+                <span className="animation-span"></span>
+                {/* Span for button text */}
+                <span className="button-text-content">Login</span>
+              </button>
+            </form>
+            <p>Don't have an account? <Link to="/signup" className="a2">Sign up</Link></p> {/* Corrected "Sigup" and ensured Link component is used directly */}
+          </div>
+        </Col>
       </div>
     </StyledWrapper>
   );
@@ -63,13 +78,14 @@ const StyledWrapper = styled.div`
   }
 
   .login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 400px;
+    /* position: absolute; */ /* REMOVED for Bootstrap Col handling */
+    /* top: 50%; */ /* REMOVED */
+    /* left: 50%; */ /* REMOVED */
+    width: 100%; /* CHANGED - takes width of parent Col */
     padding: 40px;
-    margin: 20px auto;
-    transform: translate(-50%, -55%);
+    /* margin: 20px auto; */ /* REMOVED or set to margin: 0; as Col and login-main handle centering */
+    margin: 0;
+    /* transform: translate(-50%, -55%); */ /* REMOVED */
     background-color: #F4F4F9;
     box-sizing: border-box;
     box-shadow: 0 15px 25px rgba(0,0,0,.6);
@@ -121,48 +137,56 @@ const StyledWrapper = styled.div`
     font-size: 12px;
   }
 
-  .login-box form a {
-    position: relative;
-    display: inline-block;
-    padding: 10px 20px;
-    font-weight: bold;
-    color: #fff;
-    font-size: 16px;
-    text-decoration: none;
-    text-transform: uppercase;
-    overflow: hidden;
-    transition: .5s;
-    margin-top: 40px;
-    letter-spacing: 3px;
+  .login-button-styled {
+    display: block; 
+    width: 100%; 
+    margin-top: 40px; /* Adjusted to match original a tag margin */
+    color:rgb(255, 255, 255);
+    padding: 0.5em 1.5em; /* This padding is for the content inside the button */
+    font-size: 18px;
+    font-weight: bold; 
+    text-transform: uppercase; 
+    letter-spacing: 3px; 
+    border-radius: 0.5em;
+    background:rgb(39, 68, 149) ;
     cursor: pointer;
+    border: 1px solid rgb(39, 68, 149); 
+    transition: all 0.3s;
+    box-shadow: 6px 6px 12px rgba(0,0,0,0.1), -6px -6px 12px rgba(255,255,255,0.7); 
+    text-decoration: none; 
+    text-align: center;
+    position: relative; /* Needed for positioning animation spans */
+    overflow: hidden;   /* Needed to contain the animation spans */
   }
 
-  .login-box a:hover {
+  .login-button-styled .button-text-content {
+    position: relative;
+    z-index: 1; /* Ensure text is above animation spans */
+  }
+
+  .login-button-styled:hover {
     background: white;
-    color: #fff;
-    border-radius: 7px;
+    color: black; 
+    border-color: white;
   }
 
-  .login-box a span {
+  /* Animated border spans */
+  .login-button-styled .animation-span {
     position: absolute;
     display: block;
+    z-index: 0; /* Below button text */
   }
 
-  .login-box a span:nth-child(1) {
+  .login-button-styled .animation-span:nth-child(1) {
     top: 0;
     left: -100%;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #1B1B3A);
+    background: linear-gradient(90deg, transparent, #1B1B3A); /* Original animation color */
     animation: btn-anim1 1.5s linear infinite;
   }
 
-  @keyframes btn-anim1 {
-    0% { left: -100%; }
-    50%,100% { left: 100%; }
-  }
-
-  .login-box a span:nth-child(2) {
+  .login-button-styled .animation-span:nth-child(2) {
     top: -100%;
     right: 0;
     width: 2px;
@@ -172,12 +196,7 @@ const StyledWrapper = styled.div`
     animation-delay: .375s;
   }
 
-  @keyframes btn-anim2 {
-    0% { top: -100%; }
-    50%,100% { top: 100%; }
-  }
-
-  .login-box a span:nth-child(3) {
+  .login-button-styled .animation-span:nth-child(3) {
     bottom: 0;
     right: -100%;
     width: 100%;
@@ -187,12 +206,7 @@ const StyledWrapper = styled.div`
     animation-delay: .75s;
   }
 
-  @keyframes btn-anim3 {
-    0% { right: -100%; }
-    50%,100% { right: 100%; }
-  }
-
-  .login-box a span:nth-child(4) {
+  .login-button-styled .animation-span:nth-child(4) {
     bottom: -100%;
     left: 0;
     width: 2px;
@@ -202,11 +216,24 @@ const StyledWrapper = styled.div`
     animation-delay: 1.125s;
   }
 
+  /* Keyframes for button animation */
+  @keyframes btn-anim1 {
+    0% { left: -100%; }
+    50%,100% { left: 100%; }
+  }
+  @keyframes btn-anim2 {
+    0% { top: -100%; }
+    50%,100% { top: 100%; }
+  }
+  @keyframes btn-anim3 {
+    0% { right: -100%; }
+    50%,100% { right: 100%; }
+  }
   @keyframes btn-anim4 {
     0% { bottom: -100%; }
     50%,100% { bottom: 100%; }
   }
-
+  
   .login-box p:last-child {
     margin-top: 20px;
     color: gray;
@@ -224,24 +251,10 @@ const StyledWrapper = styled.div`
     border-radius: 5px;
   }
     
-  button {
-  color:rgb(255, 255, 255);
-  padding: 0.5em 1.5em;
-  font-size: 18px;
-  border-radius: 0.5em;
-  background:rgb(39, 68, 149) ;
-  cursor: pointer;
-  border: 1px solid #e8e8e8;
-  transition: all 0.3s;
-  box-shadow: 6px 6px 12pxrgb(197, 197, 197), -6px -6px 12px #ffffff;
-}
-
-button:hover {
-  color: black;
-  letter-spacing: 3px;
-  padding: 0.5em 1.7em;
-  background: #fff;
- }
+  /* The global button style might conflict or be redundant now, 
+     preferring .login-button-styled or direct button styling within .login-box */
+  /* button { ... } */
+  /* button:hover { ... } */
 
 `;
 

@@ -186,18 +186,18 @@ const Cart = () => {
                                     {getCartTotal() >= 499 ? 'FREE' : formatPrice(49)}
                                 </span>
                             </div>
-                            <div className="summary-row d-flex justify-content-between mb-2">
+                            {/* <div className="summary-row d-flex justify-content-between mb-2">
                                 <span>Tax (18% GST):</span>
                                 <span>{formatPrice(getCartTotal() * 0.18)}</span>
-                            </div>
+                            </div> */}
                             <hr />
                             <div className="summary-total d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
                                 <strong className="text-primary">
                                     {formatPrice(
                                         getCartTotal() + 
-                                        (getCartTotal() >= 499 ? 0 : 49) + 
-                                        (getCartTotal() * 0.18)
+                                        (getCartTotal() >= 499 ? 0 : 49) //+ 
+                                       // (getCartTotal() * 0.18)
                                     )}
                                 </strong>
                             </div>
@@ -209,15 +209,15 @@ const Cart = () => {
                             )}
 
                             <Button variant="success" size="lg" className="w-100 mb-2" onClick={handleOrderPlaced}>
-                                <FaCreditCard className="me-2" />
-                                Proceed to Checkout
+                                {/* <FaCreditCard className="me-2" /> */}
+                                Order now   
                             </Button>
-
+{/* 
                             <div className="payment-options text-center">
                                 <small className="text-muted">
                                     Secure checkout with multiple payment options
                                 </small>
-                            </div>
+                            </div> */}
                         </Card.Body>
                     </Card>
                 </Col>

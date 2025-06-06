@@ -1,6 +1,6 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card, Carousel, Button, Badge, Alert } from 'react-bootstrap';
-import { FaStar, FaShippingFast, FaShieldAlt, FaHeadset, FaFire, FaArrowRight, FaCheck } from 'react-icons/fa';
+import { FaStar,FaArrowRight,FaFire,FaShippingFast,FaShieldAlt,FaHeadset,FaShoppingCart, FaCheck, FaBox } from 'react-icons/fa'; // Added FaBox
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import '../Components/css/Home.css';
@@ -8,7 +8,8 @@ import '../Components/css/Home.css';
 const Home = () => {
     const [addedToCart, setAddedToCart] = useState(null);
     const { addToCart } = useCart();
-
+    const [animatingCartProductId, setAnimatingCartProductId] = useState(null); // State for animation
+    
     // const navigate = useNavigate()
 
     // useEffect(() => {
@@ -51,17 +52,22 @@ const Home = () => {
             originalPrice: 89999,
             image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop&auto=format",
             rating: 4.8,
-            discount: 11        }
+            discount: 11
+        }
     ];
 
     const handleAddToCart = (product) => {
         addToCart(product);
         setAddedToCart(product.id);
-        
-        // Remove the success message after 2 seconds
+        setAnimatingCartProductId(product.id);
+
         setTimeout(() => {
             setAddedToCart(null);
         }, 2000);
+
+        setTimeout(() => {
+            setAnimatingCartProductId(null); // Reset animation state after 1.5s
+        }, 1500);
     };
 
     return (
@@ -227,8 +233,8 @@ const Home = () => {
                         <Col lg={3} md={6} sm={6} key={product.id} className="mb-4">
                             <Card className="product-card h-100">
                                 <div className="product-image-container">
-                                    <img 
-                                        src={product.image} 
+                                    <img
+                                        src={product.image}
                                         alt={product.name}
                                         className="product-image"
                                     />
@@ -248,13 +254,16 @@ const Home = () => {
                                         <FaStar className="star-icon" />
                                         <span>{product.rating}</span>
                                     </div>
-                                    <Button 
-                                        variant="primary" 
-                                        className="add-to-cart-btn mt-auto"
+                                    <button
+                                        className={`cart-button w-100 ${animatingCartProductId === product.id ? "clicked" : ""}`}
                                         onClick={() => handleAddToCart(product)}
+                                        disabled={animatingCartProductId === product.id}
                                     >
-                                        Add to Cart
-                                    </Button>
+                                        <span className="add-to-cart">Add to Cart</span>
+                                        <span className="added">Added</span>
+                                        <FaShoppingCart className="fa-shopping-cart" />
+                                        <FaBox className="fa-box" />
+                                    </button>
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -355,5 +364,5 @@ const Home = () => {
         </>
     );
 };
- 
+
 export default Home;

@@ -332,7 +332,7 @@ const Product = () => {
                                         <button
                                             className={`cart-button w-100 ${animatingCartProductId === product.id ? "clicked" : ""}`}
                                             onClick={() => handleAddToCart(product)}
-                                            disabled={animatingCartProductId === product.id} // Disable button during animation
+                                            disabled={animatingCartProductId === product.id} 
                                         >
                                             <span className="add-to-cart">Add to Cart</span>
                                             <span className="added">Added</span>
