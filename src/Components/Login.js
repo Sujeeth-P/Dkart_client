@@ -56,7 +56,7 @@ const Login = () => {
                 <span className="button-text-content">Login</span>
               </button>
             </form>
-            <p>Don't have an account? <Link to="/signup" className="a2">Sign up</Link></p> {/* Corrected "Sigup" and ensured Link component is used directly */}
+            <p>Don't have an account? <Link to="/" className="a2">Sign up</Link></p> {/* Fixed route to match App.js routing */}
           </div>
         </Col>
       </div>
