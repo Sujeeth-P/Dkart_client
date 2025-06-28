@@ -8,13 +8,15 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   function handlePost(e) { // Added 'e' parameter
     e.preventDefault(); // Prevent default form submission
+    setIsLoading(true);
     axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/signup", { name, email, password })
       .then(() => {
-        alert("Signup successful! Please login."); // Updated alert message
+        //alert("Signup successful! Please login."); // Updated alert message
         setName('');
         setEmail('');
         setPassword('');
@@ -29,6 +31,9 @@ const Signup = () => {
           alert("Signup failed. Please try again.");
         }
         console.error("Signup error:", err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
@@ -51,14 +56,23 @@ const Signup = () => {
                 <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <label>Password</label>
               </div>
-              <button type="submit" className="signup-button-styled">
+              <button type="submit" className="signup-button-styled" disabled={isLoading}>
                 {/* Spans for animation */}
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
                 {/* Span for button text */}
-                <span className="button-text-content">Sign Up</span>
+                <span className="button-text-content">
+                  {isLoading ? (
+                    <>
+                      <span className="spinner"></span>
+                      Signing up...
+                    </>
+                  ) : (
+                    'Sign Up'
+                  )}
+                </span>
               </button>
             </form>
             <p>Already have an account? <Link to="/login" className="a2">Login</Link></p>
@@ -173,6 +187,27 @@ const StyledWrapper = styled.div`
     background: white;
     color: black; 
     border-color: white;
+  }
+
+  .signup-button-styled:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   .signup-button-styled .animation-span {
