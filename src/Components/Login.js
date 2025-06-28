@@ -14,15 +14,7 @@ const Login = () => {
     e.preventDefault(); // Prevent default anchor tag behavior if button is inside <a>
     setIsLoading(true);
     axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/login", { email, password })
-      .then((response) => {
-        // Store user data in localStorage for order management
-        localStorage.setItem('user', JSON.stringify({
-          _id: response.data._id,
-          name: response.data.name,
-          email: response.data.email,
-          token: response.data.token
-        }));
-        
+      .then(() => {
       //  alert("Login successful!"); // More user-friendly message
         setEmail('');
         setPassword('');

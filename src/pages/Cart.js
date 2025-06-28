@@ -4,14 +4,11 @@ import { Container, Row, Col, Card, Button, Badge, Alert } from 'react-bootstrap
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaCreditCard } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { useOrder } from '../context/OrderContext';
 import '../Components/css/Cart.css';
 
 const Cart = () => {
     const { cartItems, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount } = useCart();
-    const { createOrder, isLoading: orderLoading } = useOrder();
     const [showPopover, setShowPopover] = useState(false);
-    const [orderError, setOrderError] = useState('');
 
     const handleQuantityChange = (productId, newQuantity) => {
         if (newQuantity < 1) return;
@@ -27,46 +24,8 @@ const Cart = () => {
         }).format(price);
     };
 
-    const handleOrderPlaced = async () => {
-        try {
-            // Get user data from localStorage
-            const userData = localStorage.getItem('user');
-            if (!userData) {
-                alert('Please login to place an order');
-                return;
-            }
-            
-            const user = JSON.parse(userData);
-            
-            // Prepare order data
-            const orderData = {
-                userId: user._id,
-                items: cartItems.map(item => ({
-                    productId: item.id,
-                    name: item.title,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.image
-                })),
-                totalAmount: getCartTotal(),
-                shippingAddress: {
-                    // You can add a form for shipping address later
-                    street: "To be collected",
-                    city: "To be collected",
-                    state: "To be collected",
-                    zipCode: "To be collected",
-                    country: "India"
-                },
-                paymentMethod: 'COD'
-            };
-
-            await createOrder(orderData);
-            setShowPopover(true);
-            setOrderError('');
-        } catch (error) {
-            console.error('Error placing order:', error);
-            setOrderError('Failed to place order. Please try again.');
-        }
+    const handleOrderPlaced = () => {
+        setShowPopover(true);
     };    const handleClosePopover = () => {
         setShowPopover(false);
         clearCart(); // Clear the cart after order is placed
@@ -249,20 +208,9 @@ const Cart = () => {
                                 </Alert>
                             )}
 
-                            {orderError && (
-                                <Alert variant="danger" className="small">
-                                    {orderError}
-                                </Alert>
-                            )}
-
-                            <Button 
-                                variant="success" 
-                                size="lg" 
-                                className="w-100 mb-2" 
-                                onClick={handleOrderPlaced}
-                                disabled={orderLoading}
-                            >
-                                {orderLoading ? 'Placing Order...' : 'Order now'}
+                            <Button variant="success" size="lg" className="w-100 mb-2" onClick={handleOrderPlaced}>
+                                {/* <FaCreditCard className="me-2" /> */}
+                                Order now   
                             </Button>
 {/* 
                             <div className="payment-options text-center">
