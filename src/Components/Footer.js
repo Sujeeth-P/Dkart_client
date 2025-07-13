@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { FaInstagram, FaFacebook, FaPinterest, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaTwitter, FaYoutube } from 'react-icons/fa';
 import './css/Footer.css';
 
 const Footer = () => {

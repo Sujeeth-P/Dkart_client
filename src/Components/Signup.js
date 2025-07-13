@@ -14,9 +14,10 @@ const Signup = () => {
   function handlePost(e) { // Added 'e' parameter
     e.preventDefault(); // Prevent default form submission
     setIsLoading(true);
-    axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/signup", { name, email, password })
-      .then(() => {
-        //alert("Signup successful! Please login."); // Updated alert message
+    axios.post("https://dkart-server.onrender.com/ecommerce/signup", { name, email, password })
+      .then((response) => {
+        console.log("Signup successful:", response.data);
+        alert(`Account created successfully! Welcome ${response.data.name}!`);
         setName('');
         setEmail('');
         setPassword('');

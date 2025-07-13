@@ -9,7 +9,7 @@ import Footer from './Components/Footer';
 import './App.css';
 import Signup from './Components/Signup.js';
 import Login from './Components/Login.js';
-
+ 
 const App = () => {
   return (
     <CartProvider>

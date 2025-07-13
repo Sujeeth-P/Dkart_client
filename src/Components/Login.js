@@ -13,9 +13,12 @@ const Login = () => {
   function handleSubmit(e) { // Added 'e' parameter
     e.preventDefault(); // Prevent default anchor tag behavior if button is inside <a>
     setIsLoading(true);
-    axios.post("https://ecom-server-u4xj.onrender.com/ecommerce/login", { email, password })
-      .then(() => {
-      //  alert("Login successful!"); // More user-friendly message
+    axios.post("https://dkart-server.onrender.com/ecommerce/login", { email, password })
+      .then((response) => {
+        console.log("Login successful:", response.data);
+        localStorage.setItem('userToken', response.data.token);
+        localStorage.setItem('userData', JSON.stringify(response.data));
+        alert(`Welcome back, ${response.data.name}!`);
         setEmail('');
         setPassword('');
         navigate('/home');
