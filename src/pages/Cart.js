@@ -10,6 +10,21 @@ const Cart = () => {
     const { cartItems, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount } = useCart();
     const [showPopover, setShowPopover] = useState(false);
 
+    // Removed userData state since it's not being used yet
+    // const [userData, setUserData] = useState(null);
+
+    // useEffect(() => {
+    //     // Get user data for welcome message
+    //     const storedUserData = localStorage.getItem('userData');
+    //     if (storedUserData) {
+    //         try {
+    //             setUserData(JSON.parse(storedUserData));
+    //         } catch (error) {
+    //             console.error('Error parsing user data:', error);
+    //         }
+    //     }
+    // }, []);
+
     const handleQuantityChange = (productId, newQuantity) => {
         if (newQuantity < 1) return;
         updateQuantity(productId, newQuantity);

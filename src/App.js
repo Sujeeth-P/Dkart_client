@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import ProtectedRoute from './Components/ProtectedRoute';
 import Nave from './Components/Nave';
 import Home from './pages/Home';
 import Products from './pages/Product';
@@ -22,7 +23,11 @@ const App = () => {
               <Route path='/login' element={<Login />} />
               <Route path="/home" element={<Home />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/cart" element={<Cart />} />
+              <Route path="/cart" element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              } />
               <Route path="*" element={<h1 className="container mt-5">Page Not Found</h1>} />
             </Routes>
           </main>

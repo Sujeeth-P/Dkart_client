@@ -2,34 +2,57 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Col } from 'react-bootstrap'; // Import Col
+import { Col } from 'react-bootstrap';
 
 const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPopover, setShowPopover] = useState(false);
+  const [popoverMessage, setPopoverMessage] = useState('');
+  const [popoverType, setPopoverType] = useState('success'); // 'success' or 'error'
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
-  function handlePost(e) { // Added 'e' parameter
-    e.preventDefault(); // Prevent default form submission
+  const showSuccessPopover = (message, name = '') => {
+    setPopoverMessage(message);
+    setPopoverType('success');
+    setUserName(name);
+    setShowPopover(true);
+  };
+
+  const showErrorPopover = (message) => {
+    setPopoverMessage(message);
+    setPopoverType('error');
+    setShowPopover(true);
+  };
+
+  const handleClosePopover = () => {
+    setShowPopover(false);
+    if (popoverType === 'success') {
+      navigate('/login'); // Navigate to login after successful signup
+    }
+  };
+
+  function handlePost(e) {
+    e.preventDefault();
     setIsLoading(true);
     axios.post("https://dkart-server.onrender.com/ecommerce/signup", { name, email, password })
       .then((response) => {
         console.log("Signup successful:", response.data);
-        alert(`Account created successfully! Welcome ${response.data.name}!`);
+        showSuccessPopover(`Account created successfully!`, response.data.name);
         setName('');
         setEmail('');
         setPassword('');
-        navigate('/login');
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {
-          alert(`Signup failed: ${err.response.data.message}`);
+          showErrorPopover(`Signup failed: ${err.response.data.message}`);
         } else if (err.message) {
-          alert(`Signup failed: ${err.message}`);
+          showErrorPopover(`Signup failed: ${err.message}`);
         } else {
-          alert("Signup failed. Please try again.");
+          showErrorPopover("Signup failed. Please try again.");
         }
         console.error("Signup error:", err);
       })
@@ -40,11 +63,11 @@ const Signup = () => {
 
   return (
     <StyledWrapper>
-      <div className="login-main"> {/* This div should center its content */}
-        <Col xs={11} sm={10} md={8} lg={6} xl={5} xxl={4}> {/* Bootstrap Col for responsive width */}
-          <div className="login-box"> {/* Styles from StyledWrapper, width/positioning adjusted */}
+      <div className="login-main">
+        <Col xs={11} sm={10} md={8} lg={6} xl={5} xxl={4}>
+          <div className="login-box">
             <p>Sign Up</p>
-            <form onSubmit={handlePost}> {/* Added onSubmit to form */}
+            <form onSubmit={handlePost}>
               <div className="user-box">
                 <input required type="text" value={name} onChange={(e) => setName(e.target.value)} />
                 <label>Name</label>
@@ -58,12 +81,10 @@ const Signup = () => {
                 <label>Password</label>
               </div>
               <button type="submit" className="signup-button-styled" disabled={isLoading}>
-                {/* Spans for animation */}
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
                 <span className="animation-span"></span>
-                {/* Span for button text */}
                 <span className="button-text-content">
                   {isLoading ? (
                     <>
@@ -80,6 +101,75 @@ const Signup = () => {
           </div>
         </Col>
       </div>
+
+      {/* Popover Overlay */}
+      {showPopover && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          zIndex: 9999,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.25)',
+            borderRadius: '16px',
+            padding: '40px',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+            backdropFilter: 'blur(10px)',
+            textAlign: 'center',
+            color: '#000',
+            maxWidth: '90%',
+          }}>
+            {popoverType === 'success' ? (
+              <>
+                <div className="tick-animation mb-3">
+                  <svg width="80" height="80" viewBox="0 0 52 52">
+                    <circle cx="26" cy="26" r="25" fill="none" stroke="#4BB543" strokeWidth="2" />
+                    <path fill="none" stroke="#4BB543" strokeWidth="5" d="M14 27 l7 7 l17 -17" />
+                  </svg>
+                </div>
+                <h3 className="mt-3">Welcome, {userName}!</h3>
+                <p>{popoverMessage}</p>
+              </>
+            ) : (
+              <>
+                <div className="error-animation mb-3">
+                  <svg width="80" height="80" viewBox="0 0 52 52">
+                    <circle cx="26" cy="26" r="25" fill="none" stroke="#FF6B6B" strokeWidth="2" />
+                    <path fill="none" stroke="#FF6B6B" strokeWidth="5" d="M16 16 l20 20" />
+                    <path fill="none" stroke="#FF6B6B" strokeWidth="5" d="M36 16 l-20 20" />
+                  </svg>
+                </div>
+                <h3 className="mt-3">Signup Failed</h3>
+                <p>{popoverMessage}</p>
+              </>
+            )}
+            <button 
+              style={{
+                marginTop: '20px',
+                padding: '10px 30px',
+                backgroundColor: '#1B1B3A',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+              onClick={handleClosePopover}
+            >
+              {popoverType === 'success' ? 'Continue to Login' : 'Try Again'}
+            </button>
+          </div>
+        </div>
+      )}
     </StyledWrapper>
   );
 };
