@@ -12,6 +12,13 @@ const Login = () => {
   const [popoverMessage, setPopoverMessage] = useState('');
   const [popoverType, setPopoverType] = useState('success'); // 'success' or 'error'
   const [userName, setUserName] = useState('');
+  
+  // Validation states
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [emailValid, setEmailValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,6 +28,50 @@ const Login = () => {
   // Check if user was redirected from a protected route
   const wasRedirected = location.state?.from?.pathname;
   const redirectMessage = wasRedirected ? `Please login to access ${wasRedirected === '/cart' ? 'your cart' : 'this page'}.` : '';
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email) && email.length <= 254;
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  // Handle email input change with validation
+  const handleEmailChange = (e) => {
+    const value = e.target.value.trim();
+    setEmail(value);
+    
+    if (value === '') {
+      setEmailError('');
+      setEmailValid(false);
+    } else if (!validateEmail(value)) {
+      setEmailError('Please enter a valid email address');
+      setEmailValid(false);
+    } else {
+      setEmailError('');
+      setEmailValid(true);
+    }
+  };
+
+  // Handle password input change with validation
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    
+    if (value === '') {
+      setPasswordError('');
+      setPasswordValid(false);
+    } else if (!validatePassword(value)) {
+      setPasswordError('Password must be at least 6 characters long');
+      setPasswordValid(false);
+    } else {
+      setPasswordError('');
+      setPasswordValid(true);
+    }
+  };
 
   const showSuccessPopover = (message, name = '') => {
     setPopoverMessage(message);
@@ -44,6 +95,34 @@ const Login = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
+    
+    // Validate form before submission
+    let isValid = true;
+    
+    if (!email) {
+      setEmailError('Email is required');
+      setEmailValid(false);
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      setEmailValid(false);
+      isValid = false;
+    }
+    
+    if (!password) {
+      setPasswordError('Password is required');
+      setPasswordValid(false);
+      isValid = false;
+    } else if (!validatePassword(password)) {
+      setPasswordError('Password must be at least 6 characters long');
+      setPasswordValid(false);
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      return;
+    }
+    
     setIsLoading(true);
     axios.post("https://dkart-server.onrender.com/ecommerce/login", { email, password })
       .then((response) => {
@@ -57,6 +136,11 @@ const Login = () => {
         showSuccessPopover(`Welcome back!`, response.data.name);
         setEmail('');
         setPassword('');
+        // Clear validation states
+        setEmailError('');
+        setPasswordError('');
+        setEmailValid(false);
+        setPasswordValid(false);
       })
       .catch((err) => {
         // Provide more specific error feedback
@@ -97,12 +181,26 @@ const Login = () => {
             )}
             <form onSubmit={handleSubmit}>
               <div className="user-box">
-                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input 
+                  required 
+                  type="email" 
+                  value={email} 
+                  onChange={handleEmailChange}
+                  className={emailError ? 'error' : emailValid ? 'success' : ''}
+                />
                 <label>Email</label>
+                {emailError && <div className="error-message">{emailError}</div>}
               </div>
               <div className="user-box">
-                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input 
+                  required 
+                  type="password" 
+                  value={password} 
+                  onChange={handlePasswordChange}
+                  className={passwordError ? 'error' : passwordValid ? 'success' : ''}
+                />
                 <label>Password</label>
+                {passwordError && <div className="error-message">{passwordError}</div>}
               </div>
               <button type="submit" className="login-button-styled" disabled={isLoading}>
                 <span className="animation-span"></span>
@@ -250,6 +348,35 @@ const StyledWrapper = styled.div`
     border-bottom: 1px solid #1B1B3A;
     outline: none;
     background: transparent;
+    transition: border-color 0.3s;
+  }
+
+  .login-box .user-box input.error {
+    border-bottom-color: #FF6B6B;
+  }
+
+  .login-box .user-box input.success {
+    border-bottom-color: #4BB543;
+  }
+
+  .login-box .user-box .error-message {
+    color: #FF6B6B;
+    font-size: 12px;
+    margin-top: -25px;
+    margin-bottom: 15px;
+    display: block;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .login-box .user-box label {

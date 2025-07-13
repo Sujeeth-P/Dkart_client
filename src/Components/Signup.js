@@ -13,6 +13,16 @@ const Signup = () => {
   const [popoverMessage, setPopoverMessage] = useState('');
   const [popoverType, setPopoverType] = useState('success'); // 'success' or 'error'
   const [userName, setUserName] = useState('');
+  
+  // Validation states
+  const [nameError, setNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [nameValid, setNameValid] = useState(false);
+  const [emailValid, setEmailValid] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
+  
   const navigate = useNavigate();
 
   const showSuccessPopover = (message, name = '') => {
@@ -35,8 +45,141 @@ const Signup = () => {
     }
   };
 
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email) && email.length <= 254;
+  };
+
+  const validatePasswordRequirements = (password) => {
+    return {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)
+    };
+  };
+
+  const isValidPassword = (password) => {
+    const checks = validatePasswordRequirements(password);
+    return checks.length && checks.uppercase && checks.lowercase && checks.number;
+  };
+
+  const calculatePasswordStrength = (password) => {
+    const checks = validatePasswordRequirements(password);
+    const score = Object.values(checks).filter(Boolean).length;
+    
+    if (score < 2) return 'weak';
+    if (score < 4) return 'fair';
+    if (score < 5) return 'good';
+    return 'strong';
+  };
+
+  // Handle name input change with validation
+  const handleNameChange = (e) => {
+    const value = e.target.value.trim();
+    setName(value);
+    
+    if (value === '') {
+      setNameError('');
+      setNameValid(false);
+    } else if (value.length < 2) {
+      setNameError('Name must be at least 2 characters long');
+      setNameValid(false);
+    } else {
+      setNameError('');
+      setNameValid(true);
+    }
+  };
+
+  // Handle email input change with validation
+  const handleEmailChange = (e) => {
+    const value = e.target.value.trim();
+    setEmail(value);
+    
+    if (value === '') {
+      setEmailError('');
+      setEmailValid(false);
+    } else if (!validateEmail(value)) {
+      setEmailError('Please enter a valid email address');
+      setEmailValid(false);
+    } else {
+      setEmailError('');
+      setEmailValid(true);
+    }
+  };
+
+  // Handle password input change with validation
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    
+    if (value === '') {
+      setPasswordError('');
+      setPasswordValid(false);
+      setPasswordStrength('');
+    } else {
+      const strength = calculatePasswordStrength(value);
+      setPasswordStrength(strength);
+      
+      if (value.length < 8) {
+       // setPasswordError('Password must be at least 8 characters long');
+        setPasswordValid(false);
+      } else if (!isValidPassword(value)) {
+        //setPasswordError('Password must contain uppercase, lowercase, and number');
+        setPasswordValid(false);
+      } else {
+        setPasswordError('');
+        setPasswordValid(true);
+      }
+    }
+  };
+
   function handlePost(e) {
     e.preventDefault();
+    
+    // Validate form before submission
+    let isValid = true;
+    
+    if (!name) {
+      setNameError('Name is required');
+      setNameValid(false);
+      isValid = false;
+    } else if (name.length < 2) {
+      setNameError('Name must be at least 2 characters long');
+      setNameValid(false);
+      isValid = false;
+    }
+    
+    if (!email) {
+      setEmailError('Email is required');
+      setEmailValid(false);
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      setEmailValid(false);
+      isValid = false;
+    }
+    
+    if (!password) {
+      setPasswordError('Password is required');
+      setPasswordValid(false);
+      isValid = false;
+    } else if (password.length < 8) {
+     // setPasswordError('Password must be at least 8 characters long');
+      setPasswordValid(false);
+      isValid = false;
+    } else if (!isValidPassword(password)) {
+      //setPasswordError('Password must contain uppercase, lowercase, and number');
+      setPasswordValid(false);
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      return;
+    }
+    
     setIsLoading(true);
     axios.post("https://dkart-server.onrender.com/ecommerce/signup", { name, email, password })
       .then((response) => {
@@ -45,6 +188,14 @@ const Signup = () => {
         setName('');
         setEmail('');
         setPassword('');
+        // Clear validation states
+        setNameError('');
+        setEmailError('');
+        setPasswordError('');
+        setNameValid(false);
+        setEmailValid(false);
+        setPasswordValid(false);
+        setPasswordStrength('');
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.message) {
@@ -69,16 +220,47 @@ const Signup = () => {
             <p>Sign Up</p>
             <form onSubmit={handlePost}>
               <div className="user-box">
-                <input required type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                <input 
+                  required 
+                  type="text" 
+                  value={name} 
+                  onChange={handleNameChange}
+                  className={nameError ? 'error' : nameValid ? 'success' : ''}
+                />
                 <label>Name</label>
+                {nameError && <div className="error-message">{nameError}</div>}
               </div>
               <div className="user-box">
-                <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input 
+                  required 
+                  type="email" 
+                  value={email} 
+                  onChange={handleEmailChange}
+                  className={emailError ? 'error' : emailValid ? 'success' : ''}
+                />
                 <label>Email</label>
+                {emailError && <div className="error-message">{emailError}</div>}
               </div>
               <div className="user-box">
-                <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input 
+                  required 
+                  type="password" 
+                  value={password} 
+                  onChange={handlePasswordChange}
+                  className={passwordError ? 'error' : passwordValid ? 'success' : ''}
+                />
                 <label>Password</label>
+                {passwordError && <div className="error-message">{passwordError}</div>}
+                {password && (
+                  <div className="password-strength" style={{ marginTop: passwordError ? '10px' : '-20px' }}>
+                    <div className="strength-bar">
+                      <div className={`strength-fill ${passwordStrength}`}></div>
+                    </div>
+                    <div className="strength-text">
+                      {passwordStrength && `${passwordStrength.charAt(0).toUpperCase() + passwordStrength.slice(1)} password`}
+                    </div>
+                  </div>
+                )}
               </div>
               <button type="submit" className="signup-button-styled" disabled={isLoading}>
                 <span className="animation-span"></span>
@@ -226,6 +408,81 @@ const StyledWrapper = styled.div`
     border-bottom: 1px solid #1B1B3A;
     outline: none;
     background: transparent;
+    transition: border-color 0.3s;
+  }
+
+  .login-box .user-box input.error {
+    border-bottom-color: #FF6B6B;
+  }
+
+  .login-box .user-box input.success {
+    border-bottom-color: #4BB543;
+  }
+
+  .login-box .user-box .error-message {
+    color: #FF6B6B;
+    font-size: 12px;
+    margin-top: -25px;
+    margin-bottom: 15px;
+    display: block;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .password-strength {
+    margin-top: -20px;
+    margin-bottom: 20px;
+  }
+
+  .strength-bar {
+    width: 100%;
+    height: 4px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+
+  .strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .strength-fill.weak {
+    width: 25%;
+    background-color: #FF6B6B;
+  }
+
+  .strength-fill.fair {
+    width: 50%;
+    background-color: #FFA726;
+  }
+
+  .strength-fill.good {
+    width: 75%;
+    background-color: #66BB6A;
+  }
+
+  .strength-fill.strong {
+    width: 100%;
+    background-color: #4BB543;
+  }
+
+  .strength-text {
+    font-size: 12px;
+    color: #666;
+    text-align: left;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .login-box .user-box label {
