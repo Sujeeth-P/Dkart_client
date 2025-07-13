@@ -1,20 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Carousel, Button, Badge, Alert } from 'react-bootstrap';
-import { FaStar,FaArrowRight,FaFire,FaShippingFast,FaShieldAlt,FaHeadset,FaShoppingCart, FaCheck, FaBox } from 'react-icons/fa'; // Added FaBox
-import { Link } from 'react-router-dom';
+import { FaStar,FaArrowRight,FaFire,FaShippingFast,FaShieldAlt,FaHeadset,FaShoppingCart, FaCheck, FaBox } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import '../Components/css/Home.css';
 
 const Home = () => {
     const [addedToCart, setAddedToCart] = useState(null);
     const { addToCart } = useCart();
-    const [animatingCartProductId, setAnimatingCartProductId] = useState(null); // State for animation
-    
-    // const navigate = useNavigate()
+    const [animatingCartProductId, setAnimatingCartProductId] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [showLoginAlert, setShowLoginAlert] = useState(false);
+    const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     navigate('/signup')
-    // },[])
+    // Check authentication status
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem('userToken');
+            const userData = localStorage.getItem('userData');
+            setIsAuthenticated(token && userData);
+        };
+
+        checkAuth();
+        
+        // Listen for auth changes
+        const handleAuthChange = () => {
+            checkAuth();
+        };
+        
+        window.addEventListener('authChange', handleAuthChange);
+        window.addEventListener('storage', handleAuthChange);
+        
+        return () => {
+            window.removeEventListener('authChange', handleAuthChange);
+            window.removeEventListener('storage', handleAuthChange);
+        };
+    }, []);
 
 
     const featuredProducts = [
@@ -57,6 +78,17 @@ const Home = () => {
     ];
 
     const handleAddToCart = (product) => {
+        // Check if user is authenticated
+        if (!isAuthenticated) {
+            setShowLoginAlert(true);
+            setTimeout(() => {
+                setShowLoginAlert(false);
+                navigate('/login', { state: { from: { pathname: '/home' } } });
+            }, 2000);
+            return;
+        }
+
+        // Proceed with adding to cart if authenticated
         addToCart(product);
         setAddedToCart(product.id);
         setAnimatingCartProductId(product.id);
@@ -66,7 +98,7 @@ const Home = () => {
         }, 2000);
 
         setTimeout(() => {
-            setAnimatingCartProductId(null); // Reset animation state after 1.5s
+            setAnimatingCartProductId(null);
         }, 1500);
     };
 
@@ -77,6 +109,14 @@ const Home = () => {
                 <Alert variant="success" className="mb-4 mx-3 d-flex align-items-center">
                     <FaCheck className="me-2" />
                     Product added to cart successfully!
+                </Alert>
+            )}
+
+            {/* Login Required Alert */}
+            {showLoginAlert && (
+                <Alert variant="warning" className="mb-4 mx-3 d-flex align-items-center">
+                    <FaShoppingCart className="me-2" />
+                    Please login to add items to cart. Redirecting...
                 </Alert>
             )}
 
@@ -258,6 +298,11 @@ const Home = () => {
                                         className={`cart-button w-100 ${animatingCartProductId === product.id ? "clicked" : ""}`}
                                         onClick={() => handleAddToCart(product)}
                                         disabled={animatingCartProductId === product.id}
+                                        title={!isAuthenticated ? "Login required to add to cart" : "Add to cart"}
+                                        style={{
+                                            opacity: !isAuthenticated ? 0.7 : 1,
+                                            cursor: 'pointer'
+                                        }}
                                     >
                                         <span className="add-to-cart">Add to Cart</span>
                                         <span className="added">Added</span>
