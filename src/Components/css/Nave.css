@@ -29,3 +29,75 @@
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
+
+/* User Dropdown Styles */
+.user-dropdown .dropdown-toggle {
+    border: none !important;
+    background: transparent !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.user-dropdown .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 5px;
+}
+
+.user-dropdown .dropdown-toggle::after {
+    color: #ffd700;
+}
+
+.user-dropdown .dropdown-menu {
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    min-width: 250px;
+}
+
+.user-dropdown .dropdown-item {
+    padding: 0.75rem 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.user-dropdown .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.user-dropdown .dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+    color: #721c24 !important;
+}
+
+.user-dropdown .dropdown-divider {
+    margin: 0.5rem 0;
+}
+
+/* Hide dropdown arrow */
+.user-dropdown.no-arrow .dropdown-toggle::after {
+    display: none !important;
+}
+
+/* Modal enhancements */
+.modal-header {
+    background: #2874f0;
+    color: white;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-dropdown .dropdown-menu {
+        min-width: 200px;
+        margin-top: 0.5rem;
+    }
+}

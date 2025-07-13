@@ -5,6 +5,8 @@ import Nav from 'react-bootstrap/Nav';
 import NavbarBS from 'react-bootstrap/Navbar';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import Modal from 'react-bootstrap/Modal';
 import { FaShoppingCart, FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import './css/Nave.css';
@@ -15,6 +17,7 @@ const Nave = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     useEffect(() => {
         const checkAuth = () => {
@@ -55,15 +58,24 @@ const Nave = () => {
     }, []);
 
     const handleLogout = () => {
+        setShowLogoutModal(true);
+    };
+
+    const confirmLogout = () => {
         localStorage.removeItem('userToken');
         localStorage.removeItem('userData');
         setIsAuthenticated(false);
         setUserData(null);
+        setShowLogoutModal(false);
         
         // Dispatch custom event for immediate UI update
         window.dispatchEvent(new Event('authChange'));
         
         navigate('/login');
+    };
+
+    const cancelLogout = () => {
+        setShowLogoutModal(false);
     };
 
     const handleCartClick = (e) => {
@@ -108,23 +120,34 @@ const Nave = () => {
 
                         {/* Authentication Links */}
                         {isAuthenticated ? (
-                            <>
-                                <Nav.Link className="nav-link d-flex align-items-center">
-                                    <FaUser className="me-1" />
-                                    <span style={{ color: '#ffd700' }}>
-                                        {userData?.name || 'User'}
+                            <NavDropdown 
+                                title={
+                                    <span className="d-flex align-items-center text-light">
+                                        <FaUser className="me-2" />
+                                        <span style={{ color: '#ffd700' }}>
+                                            {userData?.name || 'User'}
+                                        </span>
                                     </span>
-                                </Nav.Link>
-                                <Button 
-                                    variant="outline-light" 
-                                    size="sm" 
-                                    onClick={handleLogout}
-                                    className="ms-2"
-                                >
-                                    <FaSignOutAlt className="me-1" />
+                                } 
+                                id="user-dropdown"
+                                align="end"
+                                className="user-dropdown no-arrow"
+                            >
+                                <NavDropdown.Item disabled className="text-muted">
+                                    <small>Signed in as</small><br />
+                                    <strong>{userData?.email || 'user@example.com'}</strong>
+                                </NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item as={Link} to="/cart">
+                                    <FaShoppingCart className="me-2" />
+                                    My Orders
+                                </NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={handleLogout} className="text-danger">
+                                    <FaSignOutAlt className="me-2" />
                                     Logout
-                                </Button>
-                            </>
+                                </NavDropdown.Item>
+                            </NavDropdown>
                         ) : (
                             <Nav.Link as={Link} to="/login" className="nav-link">
                                 <FaSignInAlt className="me-1" />
@@ -134,6 +157,31 @@ const Nave = () => {
                     </Nav>
                 </NavbarBS.Collapse>
             </Container>
+
+            {/* Logout Confirmation Modal */}
+            <Modal show={showLogoutModal} onHide={cancelLogout} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title className="d-flex align-items-center">
+                        <FaSignOutAlt className="me-2" />
+                        Confirm Logout
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to logout?</p>
+                    <small className="text-muted">
+                        You'll need to login again to access your cart and place orders.
+                    </small>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-secondary" onClick={cancelLogout}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmLogout}>
+                        <FaSignOutAlt className="me-1" />
+                        Yes, Logout
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </NavbarBS>
     );
 };
