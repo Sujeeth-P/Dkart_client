@@ -19,9 +19,10 @@ const App = () => {
           <Nave />
           <main className="main-content">
             <Routes>
-              <Route path='/' element={<Signup />} />
+              <Route path='/' element={<Home />} />
+              <Route path='/home' element={<Home />} />
               <Route path='/login' element={<Login />} />
-              <Route path="/home" element={<Home />} />
+              <Route path="/signup" element={<Signup />} />
               <Route path="/products" element={<Products />} />
               <Route path="/cart" element={
                 <ProtectedRoute>
