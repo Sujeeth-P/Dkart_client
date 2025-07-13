@@ -395,12 +395,10 @@ const Product = () => {
                                             title={!isAuthenticated ? "Login required to add to cart" : "Add to cart"}
                                             style={{
                                                 opacity: !isAuthenticated ? 0.7 : 1,
-                                                cursor: !isAuthenticated ? 'pointer' : 'pointer'
+                                                cursor: 'pointer'
                                             }}
                                         >
-                                            <span className="add-to-cart">
-                                                {!isAuthenticated ? "Login to Add" : "Add to Cart"}
-                                            </span>
+                                            <span className="add-to-cart">Add to Cart</span>
                                             <span className="added">Added</span>
                                             <FaShoppingCart className="fa-shopping-cart" />
                                             <FaBox className="fa-box" />
