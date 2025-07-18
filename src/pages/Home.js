@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Carousel, Button, Badge, Alert } from 'react-bootstrap';
-import { FaStar,FaArrowRight,FaFire,FaShippingFast,FaShieldAlt,FaHeadset,FaShoppingCart, FaCheck, FaBox } from 'react-icons/fa';
+import { FaStar, FaArrowRight, FaFire, FaShippingFast, FaShieldAlt, FaHeadset, FaShoppingCart, FaCheck, FaBox } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import '../Components/css/Home.css';
+import '../Components/css/CartButton.css';
 
 const Home = () => {
     const [addedToCart, setAddedToCart] = useState(null);
@@ -277,6 +278,7 @@ const Home = () => {
                                         src={product.image}
                                         alt={product.name}
                                         className="product-image"
+                                        style={{ height: '200px', objectFit: 'cover' }}
                                     />
                                     <Badge bg="danger" className="discount-badge">
                                         {product.discount}% OFF
@@ -290,25 +292,28 @@ const Home = () => {
                                     <div className="price-section mb-2">
                                         <span className="current-price">₹{product.price.toLocaleString()}</span>
                                         <span className="original-price ms-2">₹{product.originalPrice.toLocaleString()}</span>
-                                    </div>                                    <div className="rating-section mb-3">
+                                    </div>
+                                    <div className="rating-section mb-3">
                                         <FaStar className="star-icon" />
                                         <span>{product.rating}</span>
                                     </div>
-                                    <button
-                                        className={`cart-button w-100 ${animatingCartProductId === product.id ? "clicked" : ""}`}
-                                        onClick={() => handleAddToCart(product)}
-                                        disabled={animatingCartProductId === product.id}
-                                        title={!isAuthenticated ? "Login required to add to cart" : "Add to cart"}
-                                        style={{
-                                            opacity: !isAuthenticated ? 0.7 : 1,
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        <span className="add-to-cart">Add to Cart</span>
-                                        <span className="added">Added</span>
-                                        <FaShoppingCart className="fa-shopping-cart" />
-                                        <FaBox className="fa-box" />
-                                    </button>
+                                    <div className="mt-auto">
+                                        <button
+                                            className={`cart-button w-100 ${animatingCartProductId === product.id ? "clicked" : ""}`}
+                                            onClick={() => handleAddToCart(product)}
+                                            disabled={animatingCartProductId === product.id}
+                                            title={!isAuthenticated ? "Login required to add to cart" : "Add to cart"}
+                                            style={{
+                                                opacity: !isAuthenticated ? 0.7 : 1,
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <span className="add-to-cart">Add to Cart</span>
+                                            <span className="added">Added</span>
+                                            <FaShoppingCart className="fa-shopping-cart" />
+                                            <FaBox className="fa-box" />
+                                        </button>
+                                    </div>
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -345,16 +350,6 @@ const Home = () => {
                             <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg" alt="Adidas" className="brand-logo" />
                         </div>
                     </Col>
-                    {/* <Col md={2} sm={4} xs={6} className="brand-col">
-                        <div className="brand-card">
-                            <img src="https://www.sony.com/en/template/2023/img/logo.svg" alt="Sony" className="brand-logo" />
-                        </div>
-                    </Col>
-                    <Col md={2} sm={4} xs={6} className="brand-col">
-                        <div className="brand-card">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/LG_logo_%282015%29.svg" alt="LG" className="brand-logo" />
-                        </div>
-                    </Col> */}
                 </Row>
             </Container>
 
