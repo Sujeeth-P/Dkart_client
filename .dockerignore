@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+build
+.git
+.gitignore
+*.md
+.env
+.vscode
+.DS_Store
+coverage
+.eslintcache
